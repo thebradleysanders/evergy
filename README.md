@@ -1,5 +1,5 @@
-# ⚡Evergy Integration for Home Assistant - WORK IN PROGRESS
-# Status: Work in progress, still in dev.
+# ⚡Evergy Integration for Home Assistant
+## Status: Work in progress, still in dev.
 
 A simple utility that you can use to login to your Evergy account and retrieve you meter readings.
 

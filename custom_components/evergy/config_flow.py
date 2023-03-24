@@ -25,7 +25,7 @@ async def validate_input(hass: core.HomeAssistant, data):
     Data has the keys from DATA_SCHEMA with values provided by the user.
     """
 #    try:
-        await hass.async_add_executor_job(get_evergy, data[CONF_USERNAME], data[CONF_PASSWORD])
+    await hass.async_add_executor_job(get_evergy, data[CONF_USERNAME], data[CONF_PASSWORD])
 #    except SerialException as err:
 #        _LOGGER.error("Error connecting to Evergy")
 #        raise CannotConnect from err

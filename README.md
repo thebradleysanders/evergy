@@ -1,5 +1,4 @@
 # ⚡Evergy Integration for Home Assistant
-## Status: Work in progress, still in dev.
 
 [![hacs_badge](https://img.shields.io/badge/HACS-Custom-41BDF5.svg?style=for-the-badge)](https://github.com/hacs/integration)
 

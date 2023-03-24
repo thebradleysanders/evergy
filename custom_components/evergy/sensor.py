@@ -53,7 +53,7 @@ async def async_setup_entry(
     entities.append(EvergySensor(evergy, "avgTemp", config_entry.entry_id, "Average Temp", "mdi:thermometer-auto"))
     entities.append(EvergySensor(evergy, "cost", config_entry.entry_id, "Cost", "mdi:currency-usd"))
     entities.append(EvergySensor(evergy, "balance", config_entry.entry_id, "Balance", "mdi:currency-usd"))
-    entities.append(EvergySensor(evergy, "isPartial", config_entry.entry_id, "Is Partial", "mdi:circle-half"))
+    entities.append(EvergySensor(evergy, "address", config_entry.entry_id, "Address", "mdi:home"))
 
     # only call update before add if it's the first run so we can try to detect zones
     first_run = hass.data[DOMAIN][config_entry.entry_id][FIRST_RUN]

@@ -39,6 +39,7 @@ class Evergy:
         self.session = None
         self.username = username
         self.password = password
+        self.dashboard_data = None
         self.account_number = None
         self.premise_id = None
         self.login_url = "https://www.evergy.com/log-in"

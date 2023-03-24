@@ -6,12 +6,14 @@ from homeassistant.helpers.entity import Entity
 from homeassistant.helpers.dispatcher import async_dispatcher_connect
 from homeassistant.util import Throttle
 
+from .const import (
+    ICON,
+    DOMAIN,
+    FIRST_RUN,
+    EVERGY_OBJECT
+)
+
 REQUIREMENTS = ['requests']
-
-CONF_USERNAME="username"
-CONF_PASSWORD="password"
-
-ICON = 'mdi:transmission-tower'
 
 _LOGGER = logging.getLogger(__name__)
 

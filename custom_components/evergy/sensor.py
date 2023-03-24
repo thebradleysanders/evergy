@@ -55,7 +55,6 @@ async def async_setup_entry(
     entities.append(EvergySensor(evergy, "billAmount", config_entry.entry_id, "Bill Amount", "mdi:currency-usd"))
     entities.append(EvergySensor(evergy, "isPastDue", config_entry.entry_id, "Is Past Due", "mdi:calendar-range"))
 
-    # only call update before add if it's the first run so we can try to detect zones
     first_run = hass.data[DOMAIN][config_entry.entry_id][FIRST_RUN]
     async_add_entities(entities, first_run)
 
@@ -85,7 +84,7 @@ class EvergySensor(SensorEntity):
             identifiers={(DOMAIN)},
             manufacturer="Evergy",
             model="Evergy.com Utility Account",
-            name=str(evergy['dashboard']['addresses']['street'])
+            name=str(evergy['dashboard']['addresses'][0]['street'])
         )
         self._update_success = True
 
@@ -103,7 +102,7 @@ class EvergySensor(SensorEntity):
             return
         
         if sensor_type == "address":
-            self._attr_native_value = str(state['dashboard']['addresses']['street'])
+            self._attr_native_value = str(state['dashboard']['addresses'][0]['street'])
         elif(sensor_type == "billAmount" or sensor_type == "isPastDue"):
             self._attr_native_value = str(state['dashboard'][self._sensor_type])
         else:

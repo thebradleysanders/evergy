@@ -5,6 +5,7 @@ from datetime import datetime
 from homeassistant.helpers.entity import Entity
 from homeassistant.helpers.dispatcher import async_dispatcher_connect
 from homeassistant.util import Throttle
+from homeassistant.const import CONF_USERNAME, CONF_PASSWORD
 
 from .const import (
     ICON,
@@ -17,55 +18,86 @@ REQUIREMENTS = ['requests']
 
 _LOGGER = logging.getLogger(__name__)
 
-SCAN_INTERVAL = timedelta(hours=12)
+async def async_setup_entry(
+    hass: HomeAssistant,
+    config_entry: ConfigEntry,
+    async_add_entities: AddEntitiesCallback,
+) -> None:
+    """Set up the Evergy platform."""
+    username = config_entry.data[CONF_USERNAME]
+    password = config_entry.data[CONF_PASSWORD]
+    evergy = hass.data[DOMAIN][config_entry.entry_id][EVERGY_OBJECT]
 
-def setup_platform(hass, config, add_entities, discovery_info=None):
-    username = str(config.get(CONF_USERNAME))
-    password = str(config.get(CONF_PASSWORD))
+    entities = [] 
+    _LOGGER.info("Adding sensor entities for Evergy")
+    entities.append(EvergySensor(evergy, "period", config_entry.entry_id, "Period", "mdi:clipboard-text-clock-outline"))
+    entities.append(EvergySensor(evergy, "billStart", config_entry.entry_id, "Bill Start", "mdi:calendar-range"))
+    entities.append(EvergySensor(evergy, "billEnd", config_entry.entry_id, "Bill End", "mdi:calendar-range"))
+    entities.append(EvergySensor(evergy, "billDate", config_entry.entry_id, "Bill Date", "mdi:calendar-range"))
+    entities.append(EvergySensor(evergy, "date", config_entry.entry_id, "Date", "mdi:calendar-range"))
+    entities.append(EvergySensor(evergy, "usage", config_entry.entry_id, "Usage", "mdi:transmission-tower"))
+    entities.append(EvergySensor(evergy, "demand", config_entry.entry_id, "Demand", "mdi:transmission-tower"))
+    entities.append(EvergySensor(evergy, "avgDemand", config_entry.entry_id, "Average Demand", "mdi:transmission-tower"))
+    entities.append(EvergySensor(evergy, "peakDemand", config_entry.entry_id, "Peak Demand", "mdi:transmission-tower"))
+    entities.append(EvergySensor(evergy, "peakDateTime", config_entry.entry_id, "Peak Date Time", "mdi:calendar-range"))
+    entities.append(EvergySensor(evergy, "maxTemp", config_entry.entry_id, "Max Temp", "mdi:thermometer-high"))
+    entities.append(EvergySensor(evergy, "minTemp", config_entry.entry_id, "Min Temp", "mdi:thermometer-low"))
+    entities.append(EvergySensor(evergy, "avgTemp", config_entry.entry_id, "Average Temp", "mdi:thermometer-auto"))
+    entities.append(EvergySensor(evergy, "cost", config_entry.entry_id, "Cost", "mdi:currency-usd"))
+    entities.append(EvergySensor(evergy, "balance", config_entry.entry_id, "Balance", "mdi:currency-usd"))
+    entities.append(EvergySensor(evergy, "isPartial", config_entry.entry_id, "Is Partial", "mdi:circle-half"))
 
-    add_entities([
-	    evergy_sensor(username=username, password=password, getattribute="Status"),
-      evergy_sensor(username=username, password=password, getattribute="Credit Rating"),
-      evergy_sensor(username=username, password=password, getattribute="Consumption"),
-      evergy_sensor(username=username, password=password, getattribute="Address"),
-      evergy_sensor(username=username, password=password, getattribute="Last Payment Date"),
-      evergy_sensor(username=username, password=password, getattribute="Last Payment"),
-      evergy_sensor(username=username, password=password, getattribute="Amount Due"),
-      evergy_sensor(username=username, password=password, getattribute="Due Date"),
-      evergy_sensor(username=username, password=password, getattribute="Past Due")
-	], True) 
+    # only call update before add if it's the first run so we can try to detect zones
+    first_run = hass.data[DOMAIN][config_entry.entry_id][FIRST_RUN]
+    async_add_entities(entities, first_run)
+
+    platform = entity_platform.async_get_current_platform()
+
+    @service.verify_domain_control(hass, DOMAIN)
+    async def async_service_handle(service_call: core.ServiceCall) -> None:
+        """Handle for services."""
+        entities = await platform.async_extract_from_service(service_call)
+
+        if not entities:
+            return
 
 
-class ks_gas_sensor(Entity):
-    def __init__(self, username, password, getattribute):
-        self._username = username
-        self._password = password
-        self._getattribute = getattribute
-        self.update = Throttle(interval)(self._update)
 
-    def _update(self):
-      pass
-   
+class EvergySensor(SensorEntity):
+    __init__(self, evergy, sensor_type, namespace, nicename, icon):
+        """Initialize new sensors."""
+        self._evergy = evergy
+        self._sensor_type = sensor_type
+        self._attr_unique_id = f"{namespace}_{self._sensor_type}"
+	self._attr_icon = icon
+        self._attr_has_entity_name = True
+        self._attr_name = f"{nicename}"
+        self._attr_native_value = None
+        self._attr_device_info = DeviceInfo(
+            identifiers={(DOMAIN)},
+            manufacturer="Evergy",
+            model="Evergy.com Utility Account",
+            name=f"Evergy"
+        )
+        self._update_success = True
+
+    def update(self):
+        """Retrieve latest value."""
+        try:
+            state = self._evergy
+        except SerialException:
+            self._update_success = False
+            _LOGGER.warning("Could not update sensor")
+            return
+
+        if not state:
+            self._update_success = False
+            return
+
+        self._attr_native_value = str(state[-1][self._sensor_type])
+
 
     @property
-    def name(self):
-        name = "KS Gas " + self._getattribute
-        return name
-
-    @property
-    def state(self):
-        return self._state
-
-    @property
-    def icon(self):
-        return ICON
-
-    @property
-    def device_state_attributes(self):
-        """Return the attributes of the sensor."""
-        return self._attributes
-
-    @property
-    def should_poll(self):
-        """Return the polling requirement for this sensor."""
-        return True
+    def entity_registry_enabled_default(self):
+        """Return if the entity should be enabled when first added to the entity registry."""
+        return self._update_success

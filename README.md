@@ -21,10 +21,10 @@ The sensor will present the latest data. The `Usage` is in kilowatt-hours. I bel
 time during that day when your usage was the highest and the `Peak Demand` is how many kilowatts you were drawing at that time.
 
 Exposed Sensors:
-* Period: `March`
+* Period: `Friday`
 * Bill Start: `2023-03-01T00:00:00`
-* Bill End: `2023-03-30T00:00:00`
-* Bill Date: `2023-03-24T00:00:00`
+* Bill End: `0000-00-00T00:00:00`
+* Bill Date: `0000-00-00T00:00:00`
 * Date: `9/18/2021`
 * Usage: `14.7756`
 * Demand: `3.7992`

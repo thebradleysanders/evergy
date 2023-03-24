@@ -19,6 +19,10 @@ day_before_yesterday = utils.get_past_date(2)
 yesterday = utils.get_past_date(1)
 today = date.today()
 
+def get_evergy(username, password):
+    evergy = Evergy(username, password)
+    data = evergy.get_usage()
+    return data
 
 def get_past_date(days_back: int = 1) -> date:
     """

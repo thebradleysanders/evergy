@@ -10,19 +10,20 @@ A simple utility that you can use to login to your Evergy account and retrieve y
 > Previously known as "KCPL"
 
 ## Usage
-```
-sensor:
-  - platform: evergy
-    username: !secret evergy_username
-    password: !secret evergy_password
-```
+
+1. Copy the folder evergy into your Home Assistant custom_components folder
+  <b>OR</b>
+  Install via HACS (Home Assistatn Community Store) by adding this custom repository
+4. Restart Home Assistant
+5. Within Home Assistant->Settings->Integrations->Add->Evergy
+
 
 ### Output
 The sensor will present the latest data. The `Usage` is in kilowatt-hours. I believe the `Peak Date Time` is the
 time during that day when your usage was the highest and the `Peak Demand` is how many kilowatts you were drawing at that time.
 
 Exposed Sensors:
-* Period: Saturday
+* Period: March
 * Bill Start: 0001-01-01T00:00:00
 * Bill End: 0001-01-01T00:00:00
 * Bill Date: 2021-09-18T00:00:00

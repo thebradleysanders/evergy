@@ -5,6 +5,6 @@
     "documentation": "https://github.com/thebradleysanders/Evergy",
     "domain": "evergy",
     "name": "Evergy",
-    "requirements": ["beautifulsoup4==4.10.0", "requests==2.26.0"],
+    "requirements": ["beautifulsoup4==4.10.0", "requests"],
     "version": "1.0.0"
   }

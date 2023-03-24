@@ -11,7 +11,7 @@ A simple utility that you can use to login to your Evergy account and retrieve y
 
 1. Copy the folder evergy into your Home Assistant custom_components folder
   <b>OR</b>
-  Install via HACS (Home Assistatn Community Store) by adding this custom repository
+  Install via HACS (Home Assistant Community Store) by adding this custom repository
 4. Restart Home Assistant
 5. Within Home Assistant->Settings->Integrations->Add->Evergy
 

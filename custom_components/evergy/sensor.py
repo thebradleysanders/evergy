@@ -72,7 +72,7 @@ async def async_setup_entry(
 
 
 class EvergySensor(SensorEntity):
-    __init__(self, evergy, sensor_type, namespace, nicename, icon):
+    def __init__(self, evergy, sensor_type: str, namespace, nicename: str, icon: str) -> None:
         """Initialize new sensors."""
         self._evergy = evergy
         self._sensor_type = sensor_type

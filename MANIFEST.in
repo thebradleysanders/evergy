@@ -1,4 +1,0 @@
-include pyproject.toml
-
-# Include the README
-include *.md

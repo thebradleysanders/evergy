@@ -25,7 +25,7 @@ from .const import (
 )
 
 _LOGGER = logging.getLogger(__name__)
-PARALLEL_UPDATES = 1
+SCAN_INTERVAL = timedelta(seconds=10800)
 
 async def async_setup_entry(
     hass: HomeAssistant,

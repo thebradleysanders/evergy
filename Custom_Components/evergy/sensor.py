@@ -1,11 +1,21 @@
+"""Support for interfacing with Evergy.com unofficial pulic API."""
+from code import interact
 import logging
 
-from datetime import timedelta
-from datetime import datetime
-from homeassistant.helpers.entity import Entity
-from homeassistant.helpers.dispatcher import async_dispatcher_connect
-from homeassistant.util import Throttle
+from homeassistant import core
+try:
+    from homeassistant.components.sensor import (
+        SensorEntity as SensorEntity,
+    )
+except ImportError:
+    from homeassistant.components.sensor import SensorEntity
+
+from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import CONF_USERNAME, CONF_PASSWORD
+from homeassistant.core import HomeAssistant
+from homeassistant.helpers import config_validation as cv, entity_platform, service
+from homeassistant.helpers.entity import DeviceInfo
+from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
 from .const import (
     ICON,
@@ -14,9 +24,8 @@ from .const import (
     EVERGY_OBJECT
 )
 
-REQUIREMENTS = ['requests']
-
 _LOGGER = logging.getLogger(__name__)
+PARALLEL_UPDATES = 1
 
 async def async_setup_entry(
     hass: HomeAssistant,
@@ -25,11 +34,10 @@ async def async_setup_entry(
 ) -> None:
     """Set up the Evergy platform."""
     username = config_entry.data[CONF_USERNAME]
-    password = config_entry.data[CONF_PASSWORD]
     evergy = hass.data[DOMAIN][config_entry.entry_id][EVERGY_OBJECT]
 
     entities = [] 
-    _LOGGER.info("Adding sensor entities for Evergy")
+    _LOGGER.info("Adding sensor entities for Evergy account %s", username)
     entities.append(EvergySensor(evergy, "period", config_entry.entry_id, "Period", "mdi:clipboard-text-clock-outline"))
     entities.append(EvergySensor(evergy, "billStart", config_entry.entry_id, "Bill Start", "mdi:calendar-range"))
     entities.append(EvergySensor(evergy, "billEnd", config_entry.entry_id, "Bill End", "mdi:calendar-range"))

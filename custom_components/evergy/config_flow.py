@@ -24,11 +24,11 @@ async def validate_input(hass: core.HomeAssistant, data):
     """Validate the user input allows us to connect.
     Data has the keys from DATA_SCHEMA with values provided by the user.
     """
-    try:
+#    try:
         await hass.async_add_executor_job(get_evergy, data[CONF_USERNAME], data[CONF_PASSWORD])
-    except SerialException as err:
-        _LOGGER.error("Error connecting to Evergy")
-        raise CannotConnect from err
+#    except SerialException as err:
+#        _LOGGER.error("Error connecting to Evergy")
+#        raise CannotConnect from err
 
     # Return info that you want to store in the config entry.
     return {CONF_USERNAME: data[CONF_USERNAME], CONF_PASSWORD: data[CONF_PASSWORD]}

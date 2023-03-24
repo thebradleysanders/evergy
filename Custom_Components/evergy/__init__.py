@@ -2,7 +2,6 @@
 import logging
 from .pyEvergy import get_evergy
 
-
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import CONF_USERNAME, CONF_PASSWORD, Platform
 from homeassistant.core import HomeAssistant
@@ -26,11 +25,11 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     username = entry.data[CONF_USERNAME]
     password = entry.data[CONF_PASSWORD]
 
-    try:
+#    try:
         evergy = await hass.async_add_executor_job(get_evergy, username, password)
-    except SerialException as err:
-        _LOGGER.error("Error connecting to evergy with username %s", username)
-        raise ConfigEntryNotReady from err
+#    except SerialException as err:
+#        _LOGGER.error("Error connecting to evergy with username %s", username)
+#        raise ConfigEntryNotReady from err
 
     # double negative to handle absence of value
     first_run = not bool(entry.data.get(CONF_NOT_FIRST_RUN))

@@ -5,8 +5,6 @@ A simple utility that you can use to login to your Evergy account and retrieve y
 
 > **Note: This is an unofficial utility that uses Evergy's non-public API.**
 
-> Previously known as "KCPL"
-
 ## Usage
 
 1. Copy the folder evergy into your Home Assistant custom_components folder

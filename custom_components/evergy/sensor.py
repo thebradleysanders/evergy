@@ -92,7 +92,7 @@ class EvergySensor(SensorEntity):
     def update(self):
         """Retrieve latest value."""
 #        try:
-            state = self._evergy
+        state = self._evergy
 #        except SerialException:
 #            self._update_success = False
 #            _LOGGER.warning("Could not update sensor")

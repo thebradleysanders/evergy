@@ -38,22 +38,22 @@ async def async_setup_entry(
 
     entities = [] 
     _LOGGER.info("Adding sensor entities for Evergy account %s", username)
-    entities.append(EvergySensor(evergy, "period", config_entry.entry_id, "Period", "mdi:clipboard-text-clock-outline"))
-    entities.append(EvergySensor(evergy, "billDate", config_entry.entry_id, "Bill Date", "mdi:calendar-range"))
-    entities.append(EvergySensor(evergy, "usage", config_entry.entry_id, "Usage", "mdi:transmission-tower"))
-    entities.append(EvergySensor(evergy, "demand", config_entry.entry_id, "Demand", "mdi:transmission-tower"))
-    entities.append(EvergySensor(evergy, "avgDemand", config_entry.entry_id, "Average Demand", "mdi:transmission-tower"))
-    entities.append(EvergySensor(evergy, "peakDemand", config_entry.entry_id, "Peak Demand", "mdi:transmission-tower"))
-    entities.append(EvergySensor(evergy, "peakDateTime", config_entry.entry_id, "Peak Date Time", "mdi:calendar-range"))
-    entities.append(EvergySensor(evergy, "maxTemp", config_entry.entry_id, "Max Temp", "mdi:thermometer-high"))
-    entities.append(EvergySensor(evergy, "minTemp", config_entry.entry_id, "Min Temp", "mdi:thermometer-low"))
-    entities.append(EvergySensor(evergy, "avgTemp", config_entry.entry_id, "Average Temp", "mdi:thermometer-auto"))
-    entities.append(EvergySensor(evergy, "cost", config_entry.entry_id, "Cost", "mdi:currency-usd"))
-    entities.append(EvergySensor(evergy, "balance", config_entry.entry_id, "Balance", "mdi:currency-usd"))
+    entities.append(EvergySensor(evergy, "period", config_entry.entry_id, "Period", "mdi:clipboard-text-clock-outline", None))
+    entities.append(EvergySensor(evergy, "billDate", config_entry.entry_id, "Bill Date", "mdi:calendar-range", None))
+    entities.append(EvergySensor(evergy, "usage", config_entry.entry_id, "Usage", "mdi:transmission-tower", "kWh"))
+    entities.append(EvergySensor(evergy, "demand", config_entry.entry_id, "Demand", "mdi:transmission-tower", "kWh"))
+    entities.append(EvergySensor(evergy, "avgDemand", config_entry.entry_id, "Average Demand", "mdi:transmission-tower", "kWh"))
+    entities.append(EvergySensor(evergy, "peakDemand", config_entry.entry_id, "Peak Demand", "mdi:transmission-tower", "kWh"))
+    entities.append(EvergySensor(evergy, "peakDateTime", config_entry.entry_id, "Peak Date Time", "mdi:calendar-range", None))
+    entities.append(EvergySensor(evergy, "maxTemp", config_entry.entry_id, "Max Temp", "mdi:thermometer-high", "°F"))
+    entities.append(EvergySensor(evergy, "minTemp", config_entry.entry_id, "Min Temp", "mdi:thermometer-low", "°F"))
+    entities.append(EvergySensor(evergy, "avgTemp", config_entry.entry_id, "Average Temp", "mdi:thermometer-auto", "°F"))
+    entities.append(EvergySensor(evergy, "cost", config_entry.entry_id, "Cost", "mdi:currency-usd", None))
+    entities.append(EvergySensor(evergy, "balance", config_entry.entry_id, "Balance", "mdi:currency-usd", None))
     
-    entities.append(EvergySensor(evergy, "address", config_entry.entry_id, "Address", "mdi:home"))
-    entities.append(EvergySensor(evergy, "billAmount", config_entry.entry_id, "Bill Amount", "mdi:currency-usd"))
-    entities.append(EvergySensor(evergy, "isPastDue", config_entry.entry_id, "Is Past Due", "mdi:calendar-range"))
+    entities.append(EvergySensor(evergy, "address", config_entry.entry_id, "Address", "mdi:home", None))
+    entities.append(EvergySensor(evergy, "billAmount", config_entry.entry_id, "Bill Amount", "mdi:currency-usd", None))
+    entities.append(EvergySensor(evergy, "isPastDue", config_entry.entry_id, "Is Past Due", "mdi:calendar-range", None))
 
     first_run = hass.data[DOMAIN][config_entry.entry_id][FIRST_RUN]
     async_add_entities(entities, first_run)
@@ -71,7 +71,7 @@ async def async_setup_entry(
 
 
 class EvergySensor(SensorEntity):
-    def __init__(self, evergy, sensor_type: str, namespace, nicename: str, icon: str) -> None:
+    def __init__(self, evergy, sensor_type: str, namespace, nicename: str, icon: str, uom: str) -> None:
         """Initialize new sensors."""
         self._evergy = evergy
         self._sensor_type = sensor_type
@@ -80,6 +80,7 @@ class EvergySensor(SensorEntity):
         self._attr_has_entity_name = True
         self._attr_name = f"{nicename}"
         self._attr_native_value = None
+        self._attr_native_unit_of_measurement = uom
         self._attr_device_info = DeviceInfo(
             identifiers={(DOMAIN)},
             manufacturer="Evergy",

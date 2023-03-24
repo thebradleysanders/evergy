@@ -26,7 +26,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     password = entry.data[CONF_PASSWORD]
 
 #    try:
-     evergy = await hass.async_add_executor_job(get_evergy, username, password)
+    evergy = await hass.async_add_executor_job(get_evergy, username, password)
 #    except SerialException as err:
 #        _LOGGER.error("Error connecting to evergy with username %s", username)
 #        raise ConfigEntryNotReady from err

@@ -5,7 +5,7 @@ from typing import Final
 
 import requests
 from bs4 import BeautifulSoup
-from . import utils
+from datetime import date, timedelta
 
 logging.basicConfig(
     format="%(asctime)s - %(levelname)s - %(name)s - %(message)s", level=logging.INFO
@@ -19,6 +19,16 @@ day_before_yesterday = utils.get_past_date(2)
 yesterday = utils.get_past_date(1)
 today = date.today()
 
+
+
+def get_past_date(days_back: int = 1) -> date:
+    """
+    Get a date based on a number of days back from today
+    :rtype: date
+    :param days_back: The number of days back to get the date for
+    :return: The date in the past
+    """
+    return date.today() - timedelta(days=days_back)
 
 class Evergy:
     def __init__(self, username, password):
@@ -85,7 +95,7 @@ class Evergy:
         :param interval: The time period between each data element in the returned data. Default is days.
         :return: A list of usage elements. The number of elements will depend on the `interval` argument.
         """
-        return self.get_usage_range(utils.get_past_date(days_back=days - 1), utils.get_past_date(0), interval=interval)
+        return self.get_usage_range(get_past_date(days_back=days - 1), get_past_date(0), interval=interval)
 
     def get_usage_range(self, start: date = utils.get_past_date(0), end: date = utils.get_past_date(0),
                         interval: str = DAY_INTERVAL) -> [dict]:

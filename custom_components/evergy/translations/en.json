@@ -5,7 +5,7 @@
         "title": "Sign into your Evergy.com account",
         "data": {
           "username": "Username",
-          "password": "Password",
+          "password": "Password"
         }
       }
     },

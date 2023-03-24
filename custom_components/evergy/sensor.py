@@ -85,7 +85,7 @@ class EvergySensor(SensorEntity):
             identifiers={(DOMAIN)},
             manufacturer="Evergy",
             model="Evergy.com Utility Account",
-            name=str(evergy['dashboard'][self._sensor_type]['addresses']['street'])
+            name=str(evergy['dashboard']['addresses']['street'])
         )
         self._update_success = True
 

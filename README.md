@@ -1,32 +1,18 @@
-# ⚡Evergy Client
-[![Latest Version on PyPi](https://badge.fury.io/py/evergy.svg)](https://pypi.org/project/evergy/)
-[![Supported Python Versions](https://img.shields.io/pypi/pyversions/evergy.svg)](https://pypi.org/project/evergy/)
-[![Documentation Status](https://readthedocs.org/projects/evergy/badge/?version=latest)](https://evergy.readthedocs.io/en/latest/)
-[![Requriements Status](https://requires.io/github/lawrencefoley/evergy/requirements.svg?branch=master)](https://requires.io/github/lawrencefoley/evergy/requirements/?branch=master)
+# ⚡Evergy Integration for Home Assistant - WORK IN PROGRESS
+# Status: Work in progress, still in dev.
 
 A simple utility that you can use to login to your Evergy account and retrieve you meter readings.
-
-- **[Documentation](https://evergy.readthedocs.io/en/latest/)**
-- **[Source Code](https://github.com/lawrencefoley/evergy)**
 
 > **Note: This is an unofficial utility that uses Evergy's non-public API.**
 
 > Previously known as "KCPL"
 
-## Install
-```
-pip install evergy
-```
-
 ## Usage
-```python
-from evergy.evergy import Evergy
+sensor:
+  - platform: evergy
+    username: !secret evergy_username
+    password: !secret evergy_password
 
-evergy = Evergy("<evergy-username>", "<evergy-password>")
-
-data = evergy.get_usage()
-print("Today's kWh: " + str(data[-1]["usage"]))
-```
 
 ### Output
 The last element from the `get_usage()` will be the latest data. The `usage` is in kilowatt-hours. I believe the `peakDateTime` is the
@@ -58,51 +44,5 @@ If you want to use this in a HA integration, please do and I'll link it here!
 
 ## Related Projects
 - [KC Water](https://github.com/patrickjmcd/kcwater): A similar project developed by [Patrick McDonagh](https://github.com/patrickjmcd). Check it out!
+- [KS_Gas](https://github.com/thebradleysanders/Kansas_Gas_Home_Assistant): A Home Assistant Integration for Kansas Gas
 
-## Development
-### Setup
-```powershell
-python -m pip install --upgrade virtualenv
-virtualenv venv
-.\venv\Scripts\activate.ps1
-```
-
-### Code Formatting
-Install the dev dependencies and run `isort` and `flake8` to properly format the code.
-```bash
-pip install -r requirements_dev.txt
-isort evergy/
-flake8 evergy/
-```
-
-### Build Docs
-Windows PowerShell:
-```powershell
-pip install -r docs/requirements_docs.txt
-docs\make.bat clean; docs\make.bat html
-```
-
-### Release New Version
-- Bump `__version__` in `evergy/__init__.py` 
-```bash
-git commit -m "Bump version"
-git tag -a v1.0.1 -m "v1.0.1"
-git push --tags
-```
-
-### Build Wheel
-> The `--no-isolation` flag tells it to use the existing virtual env
-```bash
-python -m build --no-isolation --wheel
-```
-
-### Upload to PyPi
-#### Test
-```bash
-twine upload --verbose --repository testpypi dist/*
-```
-
-#### Prod
-```bash
-twine upload --verbose --repository pypi dist/*
-```

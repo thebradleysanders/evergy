@@ -20,10 +20,6 @@ def get_evergy(username, password):
     data = evergy.get_usage()
     return data
 
-day_before_yesterday = get_past_date(2)
-yesterday = get_past_date(1)
-today = date.today()
-
 def get_past_date(days_back: int = 1) -> date:
     """
     Get a date based on a number of days back from today
@@ -32,6 +28,10 @@ def get_past_date(days_back: int = 1) -> date:
     :return: The date in the past
     """
     return date.today() - timedelta(days=days_back)
+
+day_before_yesterday = get_past_date(2)
+yesterday = get_past_date(1)
+today = date.today()
 
 class Evergy:
     def __init__(self, username, password):

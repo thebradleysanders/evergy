@@ -46,9 +46,7 @@ class Evergy:
         self.account_summary_url = (
             "https://www.evergy.com/ma/my-account/account-summary"
         )
-        self.account_dashboard_url = (
-            "https://www.evergy.com/api/account/{accountNum}/dashboard/current"
-        )
+        self.account_dashboard_url = "https://www.evergy.com/api/account/{accountNum}/dashboard/current"
         self.usageDataUrl = "https://www.evergy.com/api/report/usage/{premise_id}?interval={interval}&from={start}&to={end}"
 
     def login(self):
@@ -74,10 +72,10 @@ class Evergy:
             self.logged_in = False
         else:
             self.account_number = json.loads(account_data[0].contents[0])["accountNumber"]
-            dashboard_data = self.session.get(
+            self.dashboard_data = self.session.get(
                 self.account_dashboard_url.format(accountNum=self.account_number)
             ).json()
-            self.premise_id = dashboard_data["addresses"][0]["premiseId"]
+            self.premise_id = self.dashboard_data["addresses"][0]["premiseId"]
             self.logged_in = (
                 self.account_number is not None and self.premise_id is not None
             )
@@ -124,4 +122,4 @@ class Evergy:
             usage_response = self.session.get(url)
         if usage_response.status_code != 200:
             raise Exception("Invalid login credentials")
-        return usage_response.json()["data"]
+        return {"usage": usage_response.json()["data"], "dashboard": self.dashboard_data}

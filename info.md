@@ -24,7 +24,7 @@ Exposed Sensors:
 * Period: `Friday`
 * Bill Amount: `0.0`
 * Is Past Due: `false`
-* Bill Due: `0000-00-01T00:00:00`
+* Bill Date: `0000-00-01T00:00:00`
 * Usage: `14.7756`
 * Demand: `3.7992`
 * Avgerage Demand: `0.0`

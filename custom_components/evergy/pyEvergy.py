@@ -15,14 +15,14 @@ DAY_INTERVAL: Final = "d"
 HOUR_INTERVAL: Final = "h"
 FIFTEEN_MINUTE_INTERVAL: Final = "mi"
 
-day_before_yesterday = utils.get_past_date(2)
-yesterday = utils.get_past_date(1)
-today = date.today()
-
 def get_evergy(username, password):
     evergy = Evergy(username, password)
     data = evergy.get_usage()
     return data
+
+day_before_yesterday = get_past_date(2)
+yesterday = get_past_date(1)
+today = date.today()
 
 def get_past_date(days_back: int = 1) -> date:
     """
@@ -98,7 +98,7 @@ class Evergy:
         """
         return self.get_usage_range(get_past_date(days_back=days - 1), get_past_date(0), interval=interval)
 
-    def get_usage_range(self, start: date = utils.get_past_date(0), end: date = utils.get_past_date(0),
+    def get_usage_range(self, start: date = get_past_date(0), end: date = get_past_date(0),
                         interval: str = DAY_INTERVAL) -> [dict]:
         """
         Gets a specific range of historical usage. Could be useful for reporting.

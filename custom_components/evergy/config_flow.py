@@ -7,14 +7,17 @@ from .pyEvergy import get_evergy
 import voluptuous as vol
 
 from homeassistant import config_entries, core, exceptions
-from .const import DOMAIN, CONF_USERNAME, CONF_PASSWORD
+from homeassistant.const import CONF_PASSWORD, CONF_USERNAME
+from .const import DOMAIN
 
 
 _LOGGER = logging.getLogger(__name__)
 
 DATA_SCHEMA = vol.Schema(
-  {vol.Required(CONF_USERNAME): str},
-  {vol.Required(CONF_PASSWORD): str}
+  {
+    vol.Required(CONF_USERNAME): str,
+    vol.Required(CONF_PASSWORD): str
+  }
 )
 
 

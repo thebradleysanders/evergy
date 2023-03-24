@@ -13,9 +13,6 @@ A simple utility that you can use to login to your Evergy account and retrieve y
 
 > Previously known as "KCPL"
 
-## ⚠ No Longer Maintained ⚠
-> I no longer have an Evergy account so I can't test this. If you would like to become a maintainer (or even just make small fixes) let me know 🙂
-
 ## Install
 ```
 pip install evergy

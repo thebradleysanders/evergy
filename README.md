@@ -23,8 +23,8 @@ time during that day when your usage was the highest and the `Peak Demand` is ho
 Exposed Sensors:
 * Address: `123 Seseme St.`
 * Period: `Friday`
-* Bill Start: `2023-03-01T00:00:00`
-* Bill End: `0000-00-00T00:00:00`
+* Bill Amount: `0.0`
+* Is Past Due: `false`
 * Bill Date: `0000-00-00T00:00:00`
 * Date: `9/18/2021`
 * Usage: `14.7756`

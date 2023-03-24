@@ -1,5 +1,6 @@
 """Support for interfacing with Evergy.com unofficial pulic API."""
 from code import interact
+from datetime import timedelta
 import logging
 
 from homeassistant import core

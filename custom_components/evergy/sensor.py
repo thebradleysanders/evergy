@@ -77,7 +77,7 @@ class EvergySensor(SensorEntity):
         self._evergy = evergy
         self._sensor_type = sensor_type
         self._attr_unique_id = f"{namespace}_{self._sensor_type}"
-	self._attr_icon = icon
+        self._attr_icon = icon
         self._attr_has_entity_name = True
         self._attr_name = f"{nicename}"
         self._attr_native_value = None

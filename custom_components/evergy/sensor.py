@@ -39,10 +39,7 @@ async def async_setup_entry(
     entities = [] 
     _LOGGER.info("Adding sensor entities for Evergy account %s", username)
     entities.append(EvergySensor(evergy, "period", config_entry.entry_id, "Period", "mdi:clipboard-text-clock-outline"))
-    entities.append(EvergySensor(evergy, "billStart", config_entry.entry_id, "Bill Start", "mdi:calendar-range"))
-    entities.append(EvergySensor(evergy, "billEnd", config_entry.entry_id, "Bill End", "mdi:calendar-range"))
     entities.append(EvergySensor(evergy, "billDate", config_entry.entry_id, "Bill Date", "mdi:calendar-range"))
-    entities.append(EvergySensor(evergy, "date", config_entry.entry_id, "Date", "mdi:calendar-range"))
     entities.append(EvergySensor(evergy, "usage", config_entry.entry_id, "Usage", "mdi:transmission-tower"))
     entities.append(EvergySensor(evergy, "demand", config_entry.entry_id, "Demand", "mdi:transmission-tower"))
     entities.append(EvergySensor(evergy, "avgDemand", config_entry.entry_id, "Average Demand", "mdi:transmission-tower"))
@@ -53,7 +50,10 @@ async def async_setup_entry(
     entities.append(EvergySensor(evergy, "avgTemp", config_entry.entry_id, "Average Temp", "mdi:thermometer-auto"))
     entities.append(EvergySensor(evergy, "cost", config_entry.entry_id, "Cost", "mdi:currency-usd"))
     entities.append(EvergySensor(evergy, "balance", config_entry.entry_id, "Balance", "mdi:currency-usd"))
+    
     entities.append(EvergySensor(evergy, "address", config_entry.entry_id, "Address", "mdi:home"))
+    entities.append(EvergySensor(evergy, "billAmount", config_entry.entry_id, "Bill Amount", "mdi:currency-usd"))
+    entities.append(EvergySensor(evergy, "isPastDue", config_entry.entry_id, "Is Past Due", "mdi:calendar-range"))
 
     # only call update before add if it's the first run so we can try to detect zones
     first_run = hass.data[DOMAIN][config_entry.entry_id][FIRST_RUN]
@@ -85,7 +85,7 @@ class EvergySensor(SensorEntity):
             identifiers={(DOMAIN)},
             manufacturer="Evergy",
             model="Evergy.com Utility Account",
-            name=f"Evergy"
+            name=str(state['dashboard'][self._sensor_type]['addresses']['street'])
         )
         self._update_success = True
 
@@ -101,8 +101,13 @@ class EvergySensor(SensorEntity):
         if not state:
             self._update_success = False
             return
-
-        self._attr_native_value = str(state[-1][self._sensor_type])
+        
+        if sensor_type == "address":
+            self._attr_native_value = str(state['dashboard']['addresses']['street'])
+        elif(sensor_type == "billAmount" or sensor_type == "isPastDue"):
+            self._attr_native_value = str(state['dashboard'][self._sensor_type])
+        else:
+            self._attr_native_value = str(state['usage'][-1][self._sensor_type])
 
 
     @property

@@ -7,9 +7,7 @@ from .pyEvergy import get_evergy
 import voluptuous as vol
 
 from homeassistant import config_entries, core, exceptions
-from homeassistant.const import CONF_USERNAME, CONF_PASSWORD
-
-from .const import DOMAIN
+from .const import DOMAIN, CONF_USERNAME, CONF_PASSWORD
 
 
 _LOGGER = logging.getLogger(__name__)

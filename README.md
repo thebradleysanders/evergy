@@ -23,21 +23,21 @@ The sensor will present the latest data. The `Usage` is in kilowatt-hours. I bel
 time during that day when your usage was the highest and the `Peak Demand` is how many kilowatts you were drawing at that time.
 
 Exposed Sensors:
-* Period: March
-* Bill Start: 0001-01-01T00:00:00
-* Bill End: 0001-01-01T00:00:00
-* Bill Date: 2021-09-18T00:00:00
-* Date: 9/18/2021
-* Usage: 14.7756
-* Demand: 3.7992
-* Avgerage Demand: 0.0
-* Peak Demand: 3.7992
-* Peak Date Time: 12:45 p.m.
-* Max Temp: 71.0
-* Min Temp: 71.0
-* Avgerage Temp: 71.0
-* Cost: 18.5748
-* Is Partial: False
+* Period: `March`
+* Bill Start: `2023-03-01T00:00:00`
+* Bill End: `2023-03-30T00:00:00`
+* Bill Date: `2023-03-24T00:00:00`
+* Date: `9/18/2021`
+* Usage: `14.7756`
+* Demand: `3.7992`
+* Avgerage Demand: `0.0`
+* Peak Demand: `3.7992`
+* Peak Date Time: `12:45 p.m.`
+* Max Temp: `71.0`
+* Min Temp: `71.0`
+* Avgerage Temp: `71.0`
+* Cost: `18.5748`
+* Is Partial: `False`
 
 
 

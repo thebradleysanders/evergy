@@ -101,9 +101,9 @@ class EvergySensor(SensorEntity):
             self._update_success = False
             return
         
-        if sensor_type == "address":
+        if self._sensor_type == "address":
             self._attr_native_value = str(state['dashboard']['addresses'][0]['street'])
-        elif(sensor_type == "billAmount" or sensor_type == "isPastDue"):
+        elif(self._sensor_type == "billAmount" or self._sensor_type == "isPastDue"):
             self._attr_native_value = str(state['dashboard'][self._sensor_type])
         else:
             self._attr_native_value = str(state['usage'][-1][self._sensor_type])

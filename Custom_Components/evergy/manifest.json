@@ -1,0 +1,8 @@
+{
+    "domain": "evergy",
+    "name": "Evergy",
+    "documentation": "https://github.com/thebradleysanders/Evergy",
+    "dependencies": [],
+    "codeowners": ["Brad Sanders"],
+    "requirements": ["requests"]
+  }

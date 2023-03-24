@@ -20,7 +20,6 @@ yesterday = utils.get_past_date(1)
 today = date.today()
 
 
-
 def get_past_date(days_back: int = 1) -> date:
     """
     Get a date based on a number of days back from today
@@ -70,9 +69,7 @@ class Evergy:
         if len(account_data) == 0:
             self.logged_in = False
         else:
-            self.account_number = json.loads(account_data[0].contents[0])[
-                "accountNumber"
-            ]
+            self.account_number = json.loads(account_data[0].contents[0])["accountNumber"]
             dashboard_data = self.session.get(
                 self.account_dashboard_url.format(accountNum=self.account_number)
             ).json()

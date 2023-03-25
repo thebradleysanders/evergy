@@ -1,6 +1,7 @@
 """Support for interfacing with Evergy.com unofficial pulic API."""
 from code import interact
 from datetime import timedelta
+import time
 import logging
 
 from homeassistant import core
@@ -26,7 +27,7 @@ from .const import (
 )
 
 _LOGGER = logging.getLogger(__name__)
-SCAN_INTERVAL = timedelta(seconds=3600)
+SCAN_INTERVAL = timedelta(seconds=60)
 PARALLEL_UPDATES = 1
 
 async def async_setup_entry(
@@ -56,6 +57,7 @@ async def async_setup_entry(
     entities.append(EvergySensor(evergy, "address", config_entry.entry_id, "Address", "mdi:home", None))
     entities.append(EvergySensor(evergy, "billAmount", config_entry.entry_id, "Bill Amount", "mdi:currency-usd", None))
     entities.append(EvergySensor(evergy, "isPastDue", config_entry.entry_id, "Is Past Due", "mdi:calendar-range", None))
+    entities.append(EvergySensor(evergy, "test", config_entry.entry_id, "DevTest", "mdi:calendar-range", None))
 
     async_add_entities(entities, True)
 
@@ -103,6 +105,8 @@ class EvergySensor(SensorEntity):
             self._attr_native_value = str(state['dashboard']['addresses'][0]['street'])
         elif(self._sensor_type == "billAmount" or self._sensor_type == "isPastDue"):
             self._attr_native_value = str(state['dashboard'][self._sensor_type])
+        elif(self._sensor_type == "test"):
+             self._attr_native_value = str(time.time())
         else:
             self._attr_native_value = str(state['usage'][-1][self._sensor_type])
 

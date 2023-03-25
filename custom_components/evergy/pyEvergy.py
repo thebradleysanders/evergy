@@ -2,6 +2,7 @@ import json
 import logging
 from datetime import date
 from typing import Final
+import time
 
 import requests
 from bs4 import BeautifulSoup
@@ -123,4 +124,6 @@ class Evergy:
             usage_response = self.session.get(url)
         if usage_response.status_code != 200:
             raise Exception("Invalid login credentials")
-        return {"usage": usage_response.json()["data"], "dashboard": self.dashboard_data}
+        data = usage_response.json()["data"]
+        data["test"] = time.time()
+        return {"usage": data, "dashboard": self.dashboard_data}

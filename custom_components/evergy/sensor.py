@@ -17,6 +17,11 @@ from homeassistant.core import HomeAssistant
 from homeassistant.helpers import config_validation as cv, entity_platform, service
 from homeassistant.helpers.entity import DeviceInfo
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
+from homeassistant.helpers.update_coordinator import (
+    CoordinatorEntity,
+    DataUpdateCoordinator,
+    UpdateFailed,
+)
 
 from .const import (
     ICON,
@@ -37,27 +42,29 @@ async def async_setup_entry(
     """Set up the Evergy platform."""
     username = config_entry.data[CONF_USERNAME]
     evergy = hass.data[DOMAIN][config_entry.entry_id][EVERGY_OBJECT]
+    coordinator = MyCoordinator(hass, evergy)
 
     entities = [] 
     _LOGGER.info("Adding sensor entities for Evergy account %s", username)
-    entities.append(EvergySensor(evergy, "period", config_entry.entry_id, "Period", "mdi:clipboard-text-clock-outline", None))
-    entities.append(EvergySensor(evergy, "billDate", config_entry.entry_id, "Total Bill Date", "mdi:calendar-range", None))
-    entities.append(EvergySensor(evergy, "usage", config_entry.entry_id, "Usage Today", "mdi:transmission-tower", "kWh"))
-    entities.append(EvergySensor(evergy, "demand", config_entry.entry_id, "Demand", "mdi:transmission-tower", "kWh"))
-    entities.append(EvergySensor(evergy, "avgDemand", config_entry.entry_id, "Average Demand", "mdi:transmission-tower", "kWh"))
-    entities.append(EvergySensor(evergy, "peakDemand", config_entry.entry_id, "Peak Demand", "mdi:transmission-tower", "kWh"))
-    entities.append(EvergySensor(evergy, "peakDateTime", config_entry.entry_id, "Peak Time", "mdi:calendar-range", None))
-    entities.append(EvergySensor(evergy, "maxTemp", config_entry.entry_id, "Max Temp", "mdi:thermometer-high", "°F"))
-    entities.append(EvergySensor(evergy, "minTemp", config_entry.entry_id, "Min Temp", "mdi:thermometer-low", "°F"))
-    entities.append(EvergySensor(evergy, "avgTemp", config_entry.entry_id, "Average Temp", "mdi:thermometer-auto", "°F"))
-    entities.append(EvergySensor(evergy, "cost", config_entry.entry_id, "Cost Today", "mdi:currency-usd", None))
-    entities.append(EvergySensor(evergy, "balance", config_entry.entry_id, "Balance", "mdi:currency-usd", None))
+    entities.append(EvergySensor(coordinator, "period", config_entry.entry_id, "Period", "mdi:clipboard-text-clock-outline", None))
+    entities.append(EvergySensor(coordinator, "billDate", config_entry.entry_id, "Total Bill Date", "mdi:calendar-range", None))
+    entities.append(EvergySensor(coordinator, "usage", config_entry.entry_id, "Usage Today", "mdi:transmission-tower", "kWh"))
+    entities.append(EvergySensor(coordinator, "demand", config_entry.entry_id, "Demand", "mdi:transmission-tower", "kWh"))
+    entities.append(EvergySensor(coordinator, "avgDemand", config_entry.entry_id, "Average Demand", "mdi:transmission-tower", "kWh"))
+    entities.append(EvergySensor(coordinator, "peakDemand", config_entry.entry_id, "Peak Demand", "mdi:transmission-tower", "kWh"))
+    entities.append(EvergySensor(coordinator, "peakDateTime", config_entry.entry_id, "Peak Time", "mdi:calendar-range", None))
+    entities.append(EvergySensor(coordinator, "maxTemp", config_entry.entry_id, "Max Temp", "mdi:thermometer-high", "°F"))
+    entities.append(EvergySensor(coordinator, "minTemp", config_entry.entry_id, "Min Temp", "mdi:thermometer-low", "°F"))
+    entities.append(EvergySensor(coordinator, "avgTemp", config_entry.entry_id, "Average Temp", "mdi:thermometer-auto", "°F"))
+    entities.append(EvergySensor(coordinator, "cost", config_entry.entry_id, "Cost Today", "mdi:currency-usd", None))
+    entities.append(EvergySensor(coordinator, "balance", config_entry.entry_id, "Balance", "mdi:currency-usd", None))
     
-    entities.append(EvergySensor(evergy, "address", config_entry.entry_id, "Address", "mdi:home", None))
-    entities.append(EvergySensor(evergy, "billAmount", config_entry.entry_id, "Bill Amount", "mdi:currency-usd", None))
-    entities.append(EvergySensor(evergy, "isPastDue", config_entry.entry_id, "Is Past Due", "mdi:calendar-range", None))
-    entities.append(EvergySensor(evergy, "test", config_entry.entry_id, "DevTest", "mdi:calendar-range", None))
+    entities.append(EvergySensor(coordinator, "address", config_entry.entry_id, "Address", "mdi:home", None))
+    entities.append(EvergySensor(coordinator, "billAmount", config_entry.entry_id, "Bill Amount", "mdi:currency-usd", None))
+    entities.append(EvergySensor(coordinator, "isPastDue", config_entry.entry_id, "Is Past Due", "mdi:calendar-range", None))
+    entities.append(EvergySensor(coordinator, "test", config_entry.entry_id, "DevTest", "mdi:calendar-range", None))
 
+    await coordinator.async_config_entry_first_refresh()
     async_add_entities(entities, True)
 
     platform = entity_platform.async_get_current_platform()
@@ -70,6 +77,42 @@ async def async_setup_entry(
         if not entities:
             return
 
+        
+      
+class MyCoordinator(DataUpdateCoordinator):
+    """My custom coordinator."""
+
+    def __init__(self, hass, my_api):
+        """Initialize my coordinator."""
+        super().__init__(
+            hass,
+            _LOGGER,
+            # Name of the data. For logging purposes.
+            name="My sensor",
+            # Polling interval. Will only be polled if there are subscribers.
+            update_interval=timedelta(seconds=30),
+        )
+        self.my_api = my_api
+
+    async def _async_update_data(self):
+        """Fetch data from API endpoint.
+
+        This is the place to pre-process the data to lookup tables
+        so entities can quickly look up their data.
+        """
+        try:
+            # Note: asyncio.TimeoutError and aiohttp.ClientError are already
+            # handled by the data update coordinator.
+            async with async_timeout.timeout(10):
+                return await self.my_api.get_usage() #### HERE
+        except ApiAuthError as err:
+            # Raising ConfigEntryAuthFailed will cancel future updates
+            # and start a config flow with SOURCE_REAUTH (async_step_reauth)
+            raise ConfigEntryAuthFailed from err
+        except ApiError as err:
+            raise UpdateFailed(f"Error communicating with API: {err}")
+        
+        
 
 
 class EvergySensor(SensorEntity):
@@ -92,20 +135,17 @@ class EvergySensor(SensorEntity):
         self._update_success = True
    
 
-    def update(self):
-        """Retrieve latest value."""
-
-        state = self._evergy
-        if not state:
-            self._update_success = False
-            return
-        
+    @callback
+    def _handle_coordinator_update(self) -> None:
+        """Handle updated data from the coordinator."""
         if self._sensor_type == "address":
-            self._attr_native_value = str(state['dashboard']['addresses'][0]['street'])
+            self._attr_native_value = str(self.coordinator.data['dashboard']['addresses'][0]['street'])
         elif(self._sensor_type == "billAmount" or self._sensor_type == "isPastDue"):
-            self._attr_native_value = str(state['dashboard'][self._sensor_type])
+            self._attr_native_value = str(self.coordinator.data['dashboard'][self._sensor_type])
         else:
-            self._attr_native_value = str(state['usage'][-1][self._sensor_type])
+            self._attr_native_value = str(self.coordinator.data['usage'][-1][self._sensor_type])
+            
+        self.async_write_ha_state()
 
 
     @property

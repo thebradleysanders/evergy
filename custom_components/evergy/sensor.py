@@ -82,7 +82,14 @@ class EvergySensor(SensorEntity):
         self._attr_name = f"{nicename}"
         self._attr_native_value = None
         self._attr_native_unit_of_measurement = uom
+        self._attr_device_info = DeviceInfo(
+            identifiers={(DOMAIN, str(evergy['dashboard']['addresses'][0]['street']))},
+            manufacturer="Evergy",
+            model="Evergy.com Utility Account",
+            name=str(evergy['dashboard']['addresses'][0]['street'])
+        )
         self._update_success = True
+   
 
     def update(self):
         """Retrieve latest value."""

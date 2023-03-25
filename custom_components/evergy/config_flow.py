@@ -3,7 +3,7 @@ from __future__ import annotations
 
 import logging
 
-from .pyEvergy import configure_evergy, get_usage
+from .pyEvergy import configure_evergy
 import voluptuous as vol
 
 from homeassistant import config_entries, core, exceptions

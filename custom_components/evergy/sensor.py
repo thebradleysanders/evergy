@@ -82,7 +82,7 @@ async def async_setup_entry(
 class MyCoordinator(DataUpdateCoordinator):
     """My custom coordinator."""
 
-    def __init__(self, hass, my_api):
+    def __init__(self, hass, evergy_api):
         """Initialize my coordinator."""
         super().__init__(
             hass,
@@ -92,7 +92,7 @@ class MyCoordinator(DataUpdateCoordinator):
             # Polling interval. Will only be polled if there are subscribers.
             update_interval=timedelta(seconds=30),
         )
-        self.my_api = my_api
+        self.evergy_api = evergy_api
 
     async def _async_update_data(self):
         """Fetch data from API endpoint.
@@ -104,7 +104,7 @@ class MyCoordinator(DataUpdateCoordinator):
             # Note: asyncio.TimeoutError and aiohttp.ClientError are already
             # handled by the data update coordinator.
             async with async_timeout.timeout(10):
-                return await self.my_api.get_usage() #### HERE
+                return await self.evergy_api.get_usage()
         except ApiAuthError as err:
             # Raising ConfigEntryAuthFailed will cancel future updates
             # and start a config flow with SOURCE_REAUTH (async_step_reauth)
@@ -115,10 +115,11 @@ class MyCoordinator(DataUpdateCoordinator):
         
 
 
-class EvergySensor(SensorEntity):
-    def __init__(self, evergy, sensor_type: str, namespace, nicename: str, icon: str, uom: str) -> None:
-        """Initialize new sensors."""
-        self._evergy = evergy
+class EvergySensor(CoordinatorEntity, SensorEntity):
+    def __init__(self, coordinator, sensor_type: str, namespace, nicename: str, icon: str, uom: str) -> None:
+        """Pass coordinator to CoordinatorEntity."""
+        super().__init__(coordinator)
+
         self._sensor_type = sensor_type
         self._attr_unique_id = f"{namespace}_{self._sensor_type}"
         self._attr_icon = icon
@@ -127,12 +128,11 @@ class EvergySensor(SensorEntity):
         self._attr_native_value = None
         self._attr_native_unit_of_measurement = uom
         self._attr_device_info = DeviceInfo(
-            identifiers={(DOMAIN, str(evergy['dashboard']['addresses'][0]['street']))},
+            identifiers={(DOMAIN, str(self._coordinator.data['dashboard']['addresses'][0]['street']))},
             manufacturer="Evergy",
             model="Evergy.com Utility Account",
-            name=str(evergy['dashboard']['addresses'][0]['street'])
+            name=str(self._coordinator.data['dashboard']['addresses'][0]['street'])
         )
-        self._update_success = True
    
 
     @callback
@@ -151,4 +151,4 @@ class EvergySensor(SensorEntity):
     @property
     def entity_registry_enabled_default(self):
         """Return if the entity should be enabled when first added to the entity registry."""
-        return self._update_success
+        return True

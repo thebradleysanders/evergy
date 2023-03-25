@@ -1,7 +1,6 @@
 """Support for interfacing with Evergy.com unofficial pulic API."""
 from code import interact
 from datetime import timedelta
-import time
 import logging
 
 from homeassistant import core
@@ -106,7 +105,7 @@ class EvergySensor(SensorEntity):
         elif(self._sensor_type == "billAmount" or self._sensor_type == "isPastDue"):
             self._attr_native_value = str(state['dashboard'][self._sensor_type])
         elif(self._sensor_type == "test"):
-            self._attr_native_value = str(state['test'])
+            self._attr_native_value = str(state[1]['test'])
         else:
             self._attr_native_value = str(state['usage'][-1][self._sensor_type])
 

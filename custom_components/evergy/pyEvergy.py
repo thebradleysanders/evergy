@@ -125,5 +125,5 @@ class Evergy:
         if usage_response.status_code != 200:
             raise Exception("Invalid login credentials")
         data = usage_response.json()["data"]
-        data[0]["test"] = time.time()
+        data[1]["test"] = time.time()
         return {"usage": data, "dashboard": self.dashboard_data}

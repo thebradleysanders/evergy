@@ -57,8 +57,7 @@ async def async_setup_entry(
     entities.append(EvergySensor(evergy, "billAmount", config_entry.entry_id, "Bill Amount", "mdi:currency-usd", None))
     entities.append(EvergySensor(evergy, "isPastDue", config_entry.entry_id, "Is Past Due", "mdi:calendar-range", None))
 
-    first_run = hass.data[DOMAIN][config_entry.entry_id][FIRST_RUN]
-    async_add_entities(entities, first_run)
+    async_add_entities(entities, True)
 
     platform = entity_platform.async_get_current_platform()
 

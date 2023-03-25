@@ -1,6 +1,6 @@
 """The Monoprice 6-Zone Amplifier integration."""
 import logging
-from .pyEvergy import get_evergy
+from .pyEvergy import configure_evergy, get_usage
 
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import CONF_USERNAME, CONF_PASSWORD, Platform

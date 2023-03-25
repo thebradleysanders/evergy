@@ -16,7 +16,7 @@ DAY_INTERVAL: Final = "d"
 HOUR_INTERVAL: Final = "h"
 FIFTEEN_MINUTE_INTERVAL: Final = "mi"
 
-def configure(username, password):
+def configure_evergy(username, password):
     return Evergy(username, password)
 
 def get_past_date(days_back: int = 1) -> date:

@@ -3,7 +3,7 @@ from __future__ import annotations
 
 import logging
 
-from .pyEvergy import get_evergy
+from .pyEvergy import configure_evergy, get_usage
 import voluptuous as vol
 
 from homeassistant import config_entries, core, exceptions
@@ -26,7 +26,7 @@ async def validate_input(hass: core.HomeAssistant, data):
     Data has the keys from DATA_SCHEMA with values provided by the user.
     """
 #    try:
-    await hass.async_add_executor_job(get_evergy, data[CONF_USERNAME], data[CONF_PASSWORD])
+    await hass.async_add_executor_job(configure_evergy, data[CONF_USERNAME], data[CONF_PASSWORD])
 #    except SerialException as err:
 #        _LOGGER.error("Error connecting to Evergy")
 #        raise CannotConnect from err

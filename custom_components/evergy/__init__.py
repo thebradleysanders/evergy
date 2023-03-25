@@ -25,7 +25,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     username = entry.data[CONF_USERNAME]
     password = entry.data[CONF_PASSWORD]
 
-    evergy = await hass.async_add_executor_job(get_evergy, username, password)
+    evergy = await hass.async_add_executor_job(configure_evergy, username, password)
 
     # double negative to handle absence of value
     first_run = not bool(entry.data.get(CONF_NOT_FIRST_RUN))

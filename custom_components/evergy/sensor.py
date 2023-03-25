@@ -1,6 +1,6 @@
 """Support for interfacing with Evergy.com unofficial pulic API."""
 from code import interact
-#from datetime import timedelta
+from datetime import timedelta
 import logging
 
 from homeassistant import core
@@ -26,7 +26,7 @@ from .const import (
 )
 
 _LOGGER = logging.getLogger(__name__)
-#SCAN_INTERVAL = timedelta(seconds=10800)
+SCAN_INTERVAL = timedelta(seconds=3600)
 PARALLEL_UPDATES = 1
 
 async def async_setup_entry(
@@ -87,7 +87,7 @@ class EvergySensor(SensorEntity):
             identifiers={(DOMAIN)},
             manufacturer="Evergy",
             model="Evergy.com Utility Account",
-            name=str(evergy['dashboard']['addresses'][0]['street'])
+            name="Evergy"
         )
         self._update_success = True
 

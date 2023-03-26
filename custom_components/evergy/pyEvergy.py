@@ -1,6 +1,5 @@
 import json
 import logging
-from datetime import date
 from typing import Final
 import time
 
@@ -15,9 +14,6 @@ logging.basicConfig(
 DAY_INTERVAL: Final = "d"
 HOUR_INTERVAL: Final = "h"
 FIFTEEN_MINUTE_INTERVAL: Final = "mi"
-
-def configure_evergy(username, password):
-    return Evergy(username, password)
 
 def get_past_date(days_back: int = 1) -> date:
     """
@@ -38,6 +34,7 @@ class Evergy:
         self.session = None
         self.username = username
         self.password = password
+        self.usage_data = None
         self.dashboard_data = None
         self.account_number = None
         self.premise_id = None
@@ -122,6 +119,6 @@ class Evergy:
             usage_response = self.session.get(url)
         if usage_response.status_code != 200:
             raise Exception("Invalid login credentials")
-        data = usage_response.json()["data"]
-        data[-1]["test"] = time.time()
-        return {"usage": data, "dashboard": self.dashboard_data}
+        self.usage_data = usage_response.json()["data"]
+
+        return {"usage": self.usage_data , "dashboard": self.dashboard_data}

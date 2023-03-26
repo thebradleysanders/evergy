@@ -8,9 +8,11 @@ from homeassistant import core
 try:
     from homeassistant.components.sensor import (
         SensorEntity as SensorEntity,
+        SensorStateClass,
+        SensorDeviceClass
     )
 except ImportError:
-    from homeassistant.components.sensor import SensorEntity
+    from homeassistant.components.sensor import SensorEntity, SensorStateClass, SensorDeviceClass
 
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import CONF_USERNAME, CONF_PASSWORD
@@ -119,6 +121,16 @@ class EvergySensor(SensorEntity):
     def entity_registry_enabled_default(self):
         """Return if the entity should be enabled when first added to the entity registry."""
         return True
+
+    @property
+    def device_class(self):
+        if(self._attr_native_unit_of_measurement == "kWh"): return SensorDeviceClass.ENERGY
+
+    @property
+    def state_class(self):
+        if(self._sensor_type == "usage"): return SensorStateClass.TOTAL_INCREASING
+        if(self._sensor_type == "cost"): return SensorStateClass.TOTAL_INCREASING
+    
 
     async def async_added_to_hass(self):
         """When entity is added to hass."""

@@ -1,6 +1,6 @@
-"""The Monoprice 6-Zone Amplifier integration."""
+""" integration."""
 import logging
-from .pyEvergy import configure_evergy
+from .pyEvergy import Evergy
 
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import CONF_USERNAME, CONF_PASSWORD, Platform
@@ -8,11 +8,8 @@ from homeassistant.core import HomeAssistant
 from homeassistant.exceptions import ConfigEntryNotReady
 
 from .const import (
-    CONF_NOT_FIRST_RUN,
     DOMAIN,
-    FIRST_RUN,
     EVERGY_OBJECT,
-    UNDO_UPDATE_LISTENER,
 )
 
 PLATFORMS = [Platform.SENSOR]
@@ -25,22 +22,12 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     username = entry.data[CONF_USERNAME]
     password = entry.data[CONF_PASSWORD]
 
-    evergy = await hass.async_add_executor_job(configure_evergy, username, password)
-
-    # double negative to handle absence of value
-    first_run = not bool(entry.data.get(CONF_NOT_FIRST_RUN))
-
-    if first_run:
-        hass.config_entries.async_update_entry(
-            entry, data={**entry.data, CONF_NOT_FIRST_RUN: True}
-        )
-
-    undo_listener = entry.add_update_listener(_update_listener)
+    evergy_api = Evergy(username, password)
+    if evergy_api is None:
+        return True
 
     hass.data.setdefault(DOMAIN, {})[entry.entry_id] = {
-        EVERGY_OBJECT: evergy,
-        UNDO_UPDATE_LISTENER: undo_listener,
-        FIRST_RUN: first_run,
+        EVERGY_OBJECT: evergy_api
     }
 
     await hass.config_entries.async_forward_entry_setups(entry, PLATFORMS)

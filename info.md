@@ -1,5 +1,4 @@
-# ⚡Evergy Integration
-
+# ⚡Evergy Integration for Home Assistant
 
 A simple utility that you can use to login to your Evergy account and retrieve you meter readings.
 
@@ -9,7 +8,7 @@ A simple utility that you can use to login to your Evergy account and retrieve y
 
 1. Copy the folder evergy into your Home Assistant custom_components folder
   <b>OR</b>
-  Install via HACS (Home Assistatn Community Store) by adding this custom repository
+  Install via HACS (Home Assistant Community Store) by adding this custom repository
 4. Restart Home Assistant
 5. Within Home Assistant->Settings->Integrations->Add->Evergy
 
@@ -18,8 +17,12 @@ A simple utility that you can use to login to your Evergy account and retrieve y
 The sensor will present the latest data. The `Usage` is in kilowatt-hours. I believe the `Peak Date Time` is the
 time during that day when your usage was the highest and the `Peak Demand` is how many kilowatts you were drawing at that time.
 
-Exposed Sensors:
+#### About
+* Update Interval is 90 minutes, sensors are only updated if there are changes.
+* Support for the Energy Dashboard
+* There seems to be at least 4 updates per day.
 
+Exposed Sensors:
 * Address: `123 Seseme St.`
 * Period: `Friday`
 * Bill Amount: `0.0`

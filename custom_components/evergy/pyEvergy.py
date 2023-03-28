@@ -112,7 +112,7 @@ class Evergy:
         )
         logging.info("Fetching {}".format(url))
         usage_response = self.session.get(url)
-        # A 403 is return if the user got logged out from inactivity
+        # A 403 is return if the user has been logged out from inactivity
         if self.logged_in and usage_response.status_code == 403:
             logging.info("Received HTTP 403, logging in again")
             self.login()

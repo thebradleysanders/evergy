@@ -71,7 +71,6 @@ async def async_setup_entry(
     entities.append(EvergySensor(coordinator, hass, "maxTemp", config_entry.entry_id, "Max Temp", "mdi:thermometer-high", "°F"))
     entities.append(EvergySensor(coordinator, hass, "minTemp", config_entry.entry_id, "Min Temp", "mdi:thermometer-low", "°F"))
     entities.append(EvergySensor(coordinator, hass, "avgTemp", config_entry.entry_id, "Average Temp", "mdi:thermometer-auto", "°F"))
-    entities.append(EvergySensor(coordinator, hass, "cost", config_entry.entry_id, "Cost Today", "mdi:currency-usd", None))
     entities.append(EvergySensor(coordinator, hass, "balance", config_entry.entry_id, "Balance", "mdi:currency-usd", None))
     entities.append(EvergySensor(coordinator, hass, "address", config_entry.entry_id, "Address", "mdi:home", None))
     entities.append(EvergySensor(coordinator, hass, "billAmount", config_entry.entry_id, "Bill Amount", "mdi:currency-usd", None))

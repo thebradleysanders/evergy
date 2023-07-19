@@ -38,7 +38,6 @@ Exposed Sensors:
 * Max Temp: `71.0`
 * Min Temp: `71.0`
 * Avgerage Temp: `71.0`
-* Cost: `18.5748`
 
 
 

@@ -113,8 +113,10 @@ class EvergySensor(SensorEntity):
             return str(self._evergy_api.dashboard_data['addresses'][0]['street'])
         elif(self._sensor_type == "billAmount" or self._sensor_type == "isPastDue"):
             return str(self._evergy_api.dashboard_data[self._sensor_type])
-        else:
+        elif self._evergy_api.usage_data != None
             return str(self._evergy_api.usage_data[-1][self._sensor_type])
+        else:
+            return None
 
     @property
     def entity_registry_enabled_default(self):

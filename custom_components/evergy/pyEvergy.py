@@ -1,7 +1,7 @@
 import json
 import logging
 from typing import Final
-import time
+from time import sleep
 
 import requests
 from requests.exceptions import ConnectionError, HTTPError, RequestException

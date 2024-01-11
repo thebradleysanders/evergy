@@ -3,24 +3,26 @@ import logging
 from .pyEvergy import Evergy
 
 from homeassistant.config_entries import ConfigEntry
-from homeassistant.const import CONF_USERNAME, CONF_PASSWORD, Platform
+from homeassistant.const import CONF_USERNAME, CONF_PASSWORD, CONF_ADDRESS, Platform
 from homeassistant.core import HomeAssistant
 from homeassistant.exceptions import ConfigEntryNotReady
 
 from .const import (
     DOMAIN,
     EVERGY_OBJECT,
+    UNDO_UPDATE_LISTENER,
 )
 
 PLATFORMS = [Platform.SENSOR]
 
 _LOGGER = logging.getLogger(__name__)
-
+UNDO_UPDATE_LISTENER = "undo_update_listener"
 
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     """Set up Evergy from a config entry."""
     username = entry.data[CONF_USERNAME]
     password = entry.data[CONF_PASSWORD]
+    #address = entry.data[CONF_ADDRESS]
 
     evergy_api = Evergy(username, password)
     if evergy_api is None:

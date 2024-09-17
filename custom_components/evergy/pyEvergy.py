@@ -1,9 +1,11 @@
 import json
 import logging
 from typing import Final
-import time
+from time import sleep
 
 import requests
+from requests.exceptions import ConnectionError, HTTPError, RequestException
+from http import HTTPStatus
 from bs4 import BeautifulSoup
 from datetime import date, timedelta
 
@@ -46,39 +48,97 @@ class Evergy:
         self.account_dashboard_url = "https://www.evergy.com/api/account/{accountNum}/dashboard/current"
         self.usageDataUrl = "https://www.evergy.com/api/report/usage/{premise_id}?interval={interval}&from={start}&to={end}"
 
+    def get_response(self,
+                     url: str = None) -> requests.Response:
+        # handle connection/timeout exceptions/request errors
+        usage_response = None
+        nb_tries = 5
+        retry_codes = [
+            HTTPStatus.TOO_MANY_REQUESTS,
+            HTTPStatus.INTERNAL_SERVER_ERROR,
+            HTTPStatus.BAD_GATEWAY,
+            HTTPStatus.SERVICE_UNAVAILABLE,
+            HTTPStatus.GATEWAY_TIMEOUT,
+        ]
+        not_logged_in_codes = [
+            HTTPStatus.BAD_REQUEST,
+            HTTPStatus.UNAUTHORIZED,
+            HTTPStatus.FORBIDDEN,
+            HTTPStatus.METHOD_NOT_ALLOWED,
+            ]
+
+        for n in range(nb_tries):
+            try:
+                usage_response = self.session.get(url)
+                usage_response.raise_for_status()
+                break
+
+            except ConnectionError as e:
+                logging.info("Connection Error: {}. Sleeping for {} seconds and try again.".format(e, n))
+                sleep(n)
+
+                continue
+
+            # A 403 is return if the user got logged out from inactivity
+            except HTTPError as e:
+                code = e.response.status_code
+                if code in retry_codes:
+                    logging.info("Received HTTP {}, try again in {} seconds".format(code,n))
+                    sleep(n)
+                elif code in not_logged_in_codes:
+                    logging.info("Received HTTP {}, logging in again".format(code))
+                    self.login()
+                else:
+                    logging.error("Unhandled Http Error. Response code: {}".format(code))
+                    usage_response = None
+                    break
+
+                continue
+
+            except RequestException as e:
+                logging.error("Received Invalid Request. Response code: {}".format(e))
+                usage_response = None
+                break
+
+        return usage_response
+
     def login(self):
         self.session = requests.Session()
         logging.info("Logging in with username: " + self.username)
-        login_form = self.session.get(self.login_url)
-        login_form_soup = BeautifulSoup(login_form.text, "html.parser")
-        csrf_token = login_form_soup.select(".login-form > input")[0]["value"]
-        csrf_token_name = login_form_soup.select(".login-form > input")[0]["name"]
-        login_payload = {
-            "Username": str(self.username),
-            "Password": str(self.password),
-            csrf_token_name: csrf_token,
-        }
-        r = self.session.post(
-            url=self.login_url, data=login_payload, allow_redirects=False
-        )
-        logging.debug("Login response: " + str(r.status_code))
-        r = self.session.get(self.account_summary_url)
-        account_data = r.json()
-        if len(account_data) == 0:
+        login_form = self.get_response(self.login_url)
+        if login_form.status_code != 200:
+            logging.info(f"Web Status Code: {login_form.status_code}, Evergy Webservice Unavailable!")
             self.logged_in = False
         else:
-            self.account_number = account_data[0]['accountNumber']
-            self.dashboard_data = self.session.get(
-                self.account_dashboard_url.format(accountNum=self.account_number)
-            ).json()
-            self.premise_id = self.dashboard_data["addresses"][0]["premiseId"]
-            self.logged_in = (
-                self.account_number is not None and self.premise_id is not None
+            login_form_soup = BeautifulSoup(login_form.text, "html.parser")
+            csrf_token = login_form_soup.select(".login-form > input")[0]["value"]
+            csrf_token_name = login_form_soup.select(".login-form > input")[0]["name"]
+            login_payload = {
+                "Username": str(self.username),
+                "Password": str(self.password),
+                csrf_token_name: csrf_token,
+            }
+            r = self.session.post(
+                url=self.login_url, data=login_payload, allow_redirects=False
             )
+            logging.debug("Login response: " + str(r.status_code))
+            r = self.get_response(self.account_summary_url)
+            account_data = r.json()
+            if len(account_data) == 0:
+                self.logged_in = False
+            else:
+                self.account_number = account_data[0]['accountNumber']
+                self.dashboard_data = self.get_response(
+                    self.account_dashboard_url.format(accountNum=self.account_number)
+                ).json()
+                self.premise_id = self.dashboard_data["addresses"][0]["premiseId"]
+                self.logged_in = (
+                    self.account_number is not None and self.premise_id is not None
+                )
 
     def logout(self):
         logging.info("Logging out")
-        self.session.get(url=self.logout_url)
+        return_data = self.get_response(url=self.logout_url)
         self.session = None
         self.logged_in = False
 
@@ -110,14 +170,12 @@ class Evergy:
             premise_id=self.premise_id, interval=interval, start=start, end=end
         )
         logging.info("Fetching {}".format(url))
-        usage_response = self.session.get(url)
-        # A 403 is return if the user got logged out from inactivity
-        if self.logged_in and usage_response.status_code == 403:
-            logging.info("Received HTTP 403, logging in again")
-            self.login()
-            usage_response = self.session.get(url)
-        if usage_response.status_code != 200:
-            raise Exception("Invalid login credentials")
-        self.usage_data = usage_response.json()["data"]
+        usage_response = self.get_response(url)
+        # all errors handled above
+        if usage_response == None:
+            self.usage_data = None
+            return None
+        else:
+            self.usage_data = usage_response.json()["data"]
+            return {"usage": self.usage_data , "dashboard": self.dashboard_data}
 
-        return {"usage": self.usage_data , "dashboard": self.dashboard_data}

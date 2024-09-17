@@ -7,7 +7,7 @@ from .pyEvergy import Evergy
 import voluptuous as vol
 
 from homeassistant import config_entries, core, exceptions
-from homeassistant.const import CONF_PASSWORD, CONF_USERNAME
+from homeassistant.const import CONF_PASSWORD, CONF_USERNAME, CONF_ADDRESS
 from .const import DOMAIN
 
 
@@ -16,7 +16,7 @@ _LOGGER = logging.getLogger(__name__)
 DATA_SCHEMA = vol.Schema(
   {
     vol.Required(CONF_USERNAME): str,
-    vol.Required(CONF_PASSWORD): str
+    vol.Required(CONF_PASSWORD): str,
   }
 )
 
@@ -29,7 +29,7 @@ async def validate_input(hass: core.HomeAssistant, data):
     await hass.async_add_executor_job(evergy_api.get_usage)
 
     # Return info that you want to store in the config entry.
-    return {CONF_USERNAME: data[CONF_USERNAME], CONF_PASSWORD: data[CONF_PASSWORD]}
+    return {CONF_USERNAME: data[CONF_USERNAME], CONF_PASSWORD: data[CONF_PASSWORD], CONF_ADDRESS: evergy_api.dashboard_data['addresses'][0]['street']}
 
 
 class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
